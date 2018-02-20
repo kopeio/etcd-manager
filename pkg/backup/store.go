@@ -6,7 +6,7 @@ import (
 	protoetcd "kope.io/etcd-manager/pkg/apis/etcd"
 )
 
-const MetaFilename = "_kopeio_etcd_manager.meta"
+const MetaFilename = "_etcd_backup.meta"
 
 type Store interface {
 	Spec() string
