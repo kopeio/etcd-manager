@@ -340,6 +340,34 @@ func (m *EtcdController) run(ctx context.Context) (bool, error) {
 		}
 	}
 
+	// Check if members think they are running etcd, but aren't part of the cluster
+	if len(clusterState.members) != 0 {
+		// Stop any running etcd
+		for _, p := range clusterState.peers {
+			peer := p.peer
+
+			if p.info != nil && p.info.EtcdState != nil && p.info.NodeConfiguration != nil && p.info.NodeConfiguration.Name != "" {
+				if clusterState.FindMember(peer.Id) == nil {
+					glog.Infof("found peer that is running etcd but is not member of etcd cluster: %v", peer.Id)
+
+					// TODO: check ackedPeerCount?
+
+					// TODO: Delay?
+
+					request := &protoetcd.StopEtcdRequest{
+						Header: m.buildHeader(),
+					}
+					response, err := peer.rpcStopEtcd(ctx, request)
+					if err != nil {
+						return false, fmt.Errorf("error stopping etcd peer %q: %v", peer.Id, err)
+					}
+					glog.Infof("stopped etcd on peer %q: %v", peer.Id, response)
+					return true, nil
+				}
+			}
+		}
+	}
+
 	// Check if the cluster is not of the desired version
 	var versionMismatch []*etcdClusterPeerInfo
 	{
