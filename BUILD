@@ -39,3 +39,28 @@ load("//images:etcd.bzl", "supported_etcd_arch_and_version")
         "etcdctl",
     ]
 ]
+
+load("@io_bazel_rules_go//go:def.bzl", "nogo")
+
+nogo(
+    name = "nogo",
+    config = "analysis-config.json",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@org_golang_x_tools//go/analysis/passes/assign:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/atomic:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/bools:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/buildtag:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/loopclosure:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/lostcancel:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/nilfunc:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/nilness:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/printf:go_tool_library",
+        # shadow is well-known to have too many false positives
+        #"@org_golang_x_tools//go/analysis/passes/shadow:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/structtag:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/unreachable:go_tool_library",
+        "@org_golang_x_tools//go/analysis/passes/unusedresult:go_tool_library",
+    ],
+)
+

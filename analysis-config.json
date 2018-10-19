@@ -1,0 +1,38 @@
+{
+    "buildtag": {
+	"exclude_files": {
+            "external/*": "third party code",
+            "vendor/*": "third party code"
+	}
+    },
+    "printf": {
+	"exclude_files": {
+            "external/*": "third party code",
+            "vendor/*": "third party code"
+	}
+    },
+    "shadow": {
+	"exclude_files": {
+            "external/*": "third party code",
+            "vendor/*": "third party code"
+	}
+    },
+    "assign": {
+	"exclude_files": {
+            "external/*": "third party code",
+            "vendor/*": "third party code"
+	}
+    },
+    "unreachable": {
+	"exclude_files": {
+            "external/*": "third party code",
+            "vendor/*": "third party code"
+	}
+    },
+    "nilness": {
+	"exclude_files": {
+            "external/*": "third party code",
+            "vendor/*": "third party code"
+	}
+    }
+}
