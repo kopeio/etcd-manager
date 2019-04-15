@@ -79,19 +79,63 @@ func (h *Provider) update() error {
 	}
 
 	glog.Infof("hosts update: primary%v, fallbacks=%v, final=%v", h.primary, h.fallbacks, addrToHosts)
-	return updateHostsFileWithRecords("/etc/hosts", h.Key, addrToHosts)
+	p := "/etc/hosts"
+	data, err := readHostsFile(p)
+	if err != nil {
+		return fmt.Errorf("Error in readHosts file: %v", err)
+	}
+	out, err := updateHostsFileWithRecords(data, h.Key, addrToHosts)
+	if err != nil {
+		return fmt.Errorf("Error in updateHostsFileWithRecords file: %v", err)
+	}
+	err = saveHostsFile(p, out)
+	if err != nil {
+		return fmt.Errorf("Error in saveHostsFile file: %v", err)
+	}
+	return nil
+
 }
 
-func updateHostsFileWithRecords(p string, key string, addrToHosts map[string][]string) error {
+func readHostsFile(p string) ([]byte, error) {
+	data, err := ioutil.ReadFile(p)
+	if err != nil {
+		return data, fmt.Errorf("error reading file %q: %v", p, err)
+	}
+	return data, nil
+}
+
+func saveHostsFile(p string, data []string) error {
 	stat, err := os.Stat(p)
 	if err != nil {
 		return fmt.Errorf("error getting file status of %q: %v", p, err)
 	}
-
-	data, err := ioutil.ReadFile(p)
+	// Note that because we are bind mounting /etc/hosts, we can't do a normal atomic file write
+	// (where we write a temp file and rename it)
+	// TODO: We should just hold the file open while we read & write it
+	err = ioutil.WriteFile(p, []byte(strings.Join(data, "\n")), stat.Mode().Perm())
 	if err != nil {
-		return fmt.Errorf("error reading file %q: %v", p, err)
+		return fmt.Errorf("error writing file %q: %v", p, err)
 	}
+
+	return nil
+}
+
+func isComment(l string) bool {
+	return strings.HasPrefix(l, "#")
+}
+
+func isValidHostEntry(l string) bool {
+	if l != "" {
+		fields := strings.Fields(l)
+		rawIP := fields[0]
+		if net.ParseIP(rawIP) == nil {
+			return false
+		}
+	}
+
+	return true
+}
+func updateHostsFileWithRecords(data []byte, key string, addrToHosts map[string][]string) ([]string, error) {
 
 	guardBegin := strings.Replace(GUARD_BEGIN_TEMPLATE, "__key__", key, -1)
 	guardEnd := strings.Replace(GUARD_END_TEMPLATE, "__key__", key, -1)
@@ -107,6 +151,11 @@ func updateHostsFileWithRecords(p string, key string, addrToHosts map[string][]s
 			continue
 		}
 		skipBlank = false
+
+		//Make Sure this is a valid line
+		if !isComment(k) && !isValidHostEntry(k) {
+			continue
+		}
 
 		if k == guardBegin {
 			depth++
@@ -164,15 +213,7 @@ func updateHostsFileWithRecords(p string, key string, addrToHosts map[string][]s
 	out = append(out, guardEnd)
 	out = append(out, "")
 
-	// Note that because we are bind mounting /etc/hosts, we can't do a normal atomic file write
-	// (where we write a temp file and rename it)
-	// TODO: We should just hold the file open while we read & write it
-	err = ioutil.WriteFile(p, []byte(strings.Join(out, "\n")), stat.Mode().Perm())
-	if err != nil {
-		return fmt.Errorf("error writing file %q: %v", p, err)
-	}
-
-	return nil
+	return out, nil
 }
 
 func atomicWriteFile(filename string, data []byte, perm os.FileMode) error {
