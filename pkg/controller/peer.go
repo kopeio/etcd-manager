@@ -64,6 +64,15 @@ func (p *peer) rpcGetInfo(ctx context.Context, request *protoetcd.GetInfoRequest
 	return peerClient.GetInfo(ctx, request)
 }
 
+func (p *peer) rpcSetInfo(ctx context.Context, request *protoetcd.SetInfoRequest) (*protoetcd.SetInfoResponse, error) {
+	peerGrpcClient, err := p.peers.GetPeerClient(p.Id)
+	if err != nil {
+		return nil, fmt.Errorf("error getting peer client %q: %v", p.Id, err)
+	}
+	peerClient := protoetcd.NewEtcdManagerServiceClient(peerGrpcClient)
+	return peerClient.SetInfo(ctx, request)
+}
+
 func (p *peer) rpcUpdateEndpoints(ctx context.Context, request *protoetcd.UpdateEndpointsRequest) (*protoetcd.UpdateEndpointsResponse, error) {
 	peerGrpcClient, err := p.peers.GetPeerClient(p.Id)
 	if err != nil {

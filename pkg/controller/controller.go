@@ -295,13 +295,47 @@ func (m *EtcdController) run(ctx context.Context) (bool, error) {
 	configuredMembers := 0
 	quarantinedMembers := 0
 	nonQuarantinedMembers := 0
+
 	for _, peer := range clusterState.peers {
 		if peer.info == nil {
 			continue
 		}
 		if peer.info.EtcdState != nil && peer.info.EtcdState.Cluster != nil {
-			//// TODO: Cross-check that the configuration is the same
-			//clusterConfiguration = peer.info.ClusterConfiguration
+
+			for _, n := range peer.info.EtcdState.Cluster.Nodes {
+				if _, ok := clusterState.peers[privateapi.PeerId(n.Name)]; !ok {
+					//if we need to update, check the info in the response from the peer.  If it doesn't match
+					//tell the peer to update its local state
+					request := &protoetcd.SetInfoRequest{}
+					request.EtcdState = &protoetcd.EtcdState{}
+					request.EtcdState.Cluster = &protoetcd.EtcdCluster{}
+					request.EtcdState.Cluster.ClusterToken = peer.info.EtcdState.Cluster.ClusterToken
+					request.EtcdState.Cluster.DesiredClusterSize = peer.info.EtcdState.Cluster.DesiredClusterSize
+					request.EtcdState.EtcdVersion = peer.info.EtcdState.EtcdVersion
+					//fill in the nodes from the peers' node configurations
+					i := 0
+					for _, innerPeer := range clusterState.peers {
+						if innerPeer.info == nil {
+							continue
+						}
+						request.EtcdState.Cluster.Nodes[i] = &protoetcd.EtcdNode{
+							Name:                  innerPeer.info.NodeConfiguration.Name,
+							ClientUrls:            innerPeer.info.NodeConfiguration.ClientUrls,
+							PeerUrls:              innerPeer.info.NodeConfiguration.PeerUrls,
+							QuarantinedClientUrls: innerPeer.info.NodeConfiguration.QuarantinedClientUrls,
+							TlsEnabled:            innerPeer.info.NodeConfiguration.TlsEnabled,
+						}
+						i++
+					}
+
+					_, err := peer.peer.rpcSetInfo(ctx, request)
+					if err != nil {
+						//this shouldn't stop the loop, since we will try again at the next iteration
+						glog.Warningf("error from SetInfo from peer %v", err)
+					}
+					break
+				}
+			}
 
 			// TODO: Cross-check that token is the same
 			configuredMembers++
