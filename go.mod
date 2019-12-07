@@ -27,7 +27,7 @@ require (
 	gopkg.in/yaml.v2 v2.2.2
 	k8s.io/apimachinery v0.0.0-20180105065639-91d8586aac31
 	k8s.io/client-go v9.0.0+incompatible
-	k8s.io/klog v0.1.0
+	k8s.io/klog v1.0.0
 	k8s.io/kops v0.0.0-20190513135614-24206f04f5eb
 	k8s.io/kubernetes v1.12.1
 	k8s.io/utils v0.0.0-20180208044234-258e2a2fa645
