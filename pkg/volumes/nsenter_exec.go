@@ -18,8 +18,8 @@ package volumes
 
 import (
 	"github.com/golang/glog"
-	"k8s.io/kubernetes/pkg/util/mount"
 	"k8s.io/utils/exec"
+	"k8s.io/utils/mount"
 )
 
 // Constants from nsenter_mount.go

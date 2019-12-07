@@ -23,9 +23,9 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	"k8s.io/kubernetes/pkg/util/mount"
-	"k8s.io/kubernetes/pkg/util/nsenter"
 	utilsexec "k8s.io/utils/exec"
+	"k8s.io/utils/mount"
+	"k8s.io/utils/nsenter"
 )
 
 type VolumeMountController struct {

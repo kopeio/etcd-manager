@@ -13,8 +13,8 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//vendor/github.com/golang/glog:go_default_library",
-        "//vendor/k8s.io/kubernetes/pkg/util/mount:go_default_library",
-        "//vendor/k8s.io/kubernetes/pkg/util/nsenter:go_default_library",
         "//vendor/k8s.io/utils/exec:go_default_library",
+        "//vendor/k8s.io/utils/mount:go_default_library",
+        "//vendor/k8s.io/utils/nsenter:go_default_library",
     ],
 )
