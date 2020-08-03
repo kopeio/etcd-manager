@@ -1,4 +1,6 @@
 steps:
+- name: justinsb/git-fingerprint
+
 - name: gcr.io/cloud-builders/bazel
   args: ['version']
 
@@ -7,9 +9,61 @@ steps:
   # To build with GCS cache
   #args: ['build', '--google_default_credentials', '--spawn_strategy=remote', '--genrule_strategy=remote', '--strategy=Javac=remote', '--strategy=Closure=remote', '--remote_http_cache=https://storage.googleapis.com/cache-bucket', '//cmd/...']
 
+
+# Temporary removed
+#- name: gcr.io/cloud-builders/bazel
+#  args: ['test', '//test/...', '--test_output=streamed', '--local_test_jobs=1']
+
+- name: debian:stretch
+  args: ['mkdir', '-p', 'artifacts']
+
+# Build user-facing binaries
+- name: debian:stretch
+  args: ['mkdir', '-p', 'staging/linux/amd64']
 - name: gcr.io/cloud-builders/bazel
-  args: ['test', '//test/...', '--test_output=streamed', '--local_test_jobs=1']
+  args: ['build', '--platforms=@io_bazel_rules_go//go/toolchain:linux_amd64', '//cmd/etcd-manager-ctl']
+- name: debian:stretch
+  args: ['cp', 'bazel-bin/cmd/etcd-manager-ctl/linux_amd64_stripped/etcd-manager-ctl', 'staging/linux/amd64/etcd-manager-ctl']
+- name: debian:stretch
+  args: ['mkdir', '-p', 'staging/darwin/amd64']
+- name: gcr.io/cloud-builders/bazel
+  args: ['build', '--platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64', '//cmd/etcd-manager-ctl']
+- name: debian:stretch
+  args: ['cp', 'bazel-bin/cmd/etcd-manager-ctl/darwin_amd64_pure_stripped/etcd-manager-ctl', 'staging/darwin/amd64/etcd-manager-ctl']
+- name: debian:stretch
+  args: ['mkdir', '-p', 'staging/windows/amd64']
+- name: gcr.io/cloud-builders/bazel
+  args: ['build', '--platforms=@io_bazel_rules_go//go/toolchain:windows_amd64', '//cmd/etcd-manager-ctl']
+- name: debian:stretch
+  args: ['cp', 'bazel-bin/cmd/etcd-manager-ctl/windows_amd64_pure_stripped/etcd-manager-ctl.exe', 'staging/windows/amd64/etcd-manager-ctl.exe']
+
+# Build images
+- name: gcr.io/cloud-builders/bazel
+  args: ['build', '--features=pure', '--platforms=@io_bazel_rules_go//go/toolchain:linux_amd64', '//images:etcd-manager.tar', '//images:etcd-backup.tar', '//images:etcd-dump.tar']
+- name: debian:stretch
+  args: ['mkdir', '-p', 'staging/images']
+
+- name: debian:stretch
+  args: ['cp', 'bazel-bin/images/etcd-manager.tar', 'staging/images']
+- name: debian:stretch
+  args: ['cp', 'bazel-bin/images/etcd-backup.tar', 'staging/images']
+- name: debian:stretch
+  args: ['cp', 'bazel-bin/images/etcd-dump.tar', 'staging/images']
+
+# Build a manifest and upload to GCS
+- name: justinsb/promobot-generate-manifest
+  args: ['staging']
+- name: justinsb/promobot-files
+  args: ['file:///workspace/staging', 'gs://$_GCS_LOCATION/$REPO_NAME/$COMMIT_SHA']
+
+artifacts:
+  objects:
+    location: 'gs://$_GCS_LOCATION/$REPO_NAME/$COMMIT_SHA'
+    #paths: ['bazel-bin/cmd/etcd-manager-ctl/linux_amd64_stripped/etcd-manager-ctl', 'bazel-bin/cmd/etcd-manager/linux_amd64_stripped/etcd-manager']
+    paths: ['artifacts/*']
 
 timeout: 1800s
 options:
   machineType: N1_HIGHCPU_8
+  requestedVerifyOption: VERIFIED
+  sourceProvenanceHash: [ "SHA256" ]
