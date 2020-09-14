@@ -22,6 +22,7 @@ goimports:
 push-etcd-manager:
 	bazel run ${BAZEL_FLAGS} --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 //images:push-etcd-manager
 	bazel run ${BAZEL_FLAGS} --platforms=@io_bazel_rules_go//go/toolchain:linux_arm64 //images:push-etcd-manager
+	tools/push-multiarch etcd-manager
 
 .PHONY: push-etcd-dump
 push-etcd-dump:

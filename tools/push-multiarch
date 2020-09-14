@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -ex
+
+IMAGE_NAME=${1}
+
+WORKSPACE_STATUS=`tools/get_workspace_status.sh`
+
+STABLE_DOCKER_REGISTRY=`echo "${WORKSPACE_STATUS}" | grep STABLE_DOCKER_REGISTRY | awk '{print $2}'`
+STABLE_DOCKER_IMAGE_PREFIX=`echo "${WORKSPACE_STATUS}" | grep STABLE_DOCKER_IMAGE_PREFIX | awk '{print $2}'`
+STABLE_DOCKER_TAG=`echo "${WORKSPACE_STATUS}" | grep STABLE_DOCKER_TAG | awk '{print $2}'`
+
+# Needed for manifest commands
+export DOCKER_CLI_EXPERIMENTAL=enabled
+
+IMAGE_BASE="${STABLE_DOCKER_REGISTRY}/${STABLE_DOCKER_IMAGE_PREFIX}${IMAGE_NAME}"
+
+MULTIARCH="${STABLE_DOCKER_REGISTRY}/${STABLE_DOCKER_IMAGE_PREFIX}${IMAGE_NAME}:${STABLE_DOCKER_TAG}"
+ARCH_AMD64="${IMAGE_BASE}-amd64:${STABLE_DOCKER_TAG}"
+ARCH_ARM64="${IMAGE_BASE}-arm64:${STABLE_DOCKER_TAG}"
+
+# We need to push to the same registry (i.e. the same image name), or else we get weird "missing object" errors
+docker pull ${ARCH_AMD64}
+docker pull ${ARCH_ARM64}
+
+docker tag ${ARCH_AMD64} ${IMAGE_BASE}:${STABLE_DOCKER_TAG}-amd64
+docker push ${IMAGE_BASE}:${STABLE_DOCKER_TAG}-amd64
+docker tag ${ARCH_ARM64} ${IMAGE_BASE}:${STABLE_DOCKER_TAG}-arm64
+docker push ${IMAGE_BASE}:${STABLE_DOCKER_TAG}-arm64
+
+ARCH_AMD64=${IMAGE_BASE}:${STABLE_DOCKER_TAG}-amd64
+ARCH_ARM64=${IMAGE_BASE}:${STABLE_DOCKER_TAG}-arm64
+
+# Finally create the manifest
+docker manifest create ${MULTIARCH} ${ARCH_AMD64} ${ARCH_ARM64}
+docker manifest annotate ${MULTIARCH} ${ARCH_AMD64} --os linux --arch amd64
+docker manifest annotate ${MULTIARCH} ${ARCH_ARM64} --os linux --arch arm64
+
+docker manifest inspect --verbose ${MULTIARCH}
+
+docker -D manifest push --purge ${MULTIARCH}
