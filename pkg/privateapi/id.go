@@ -22,7 +22,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	"kope.io/etcd-manager/pkg/ioutils"
 )
 

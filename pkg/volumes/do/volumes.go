@@ -29,7 +29,7 @@ import (
 
 	"github.com/digitalocean/godo"
 	"golang.org/x/oauth2"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	"kope.io/etcd-manager/pkg/volumes"
 )
 

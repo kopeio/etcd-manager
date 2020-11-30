@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	"k8s.io/kops/util/pkg/vfs"
 
 	"kope.io/etcd-manager/pkg/privateapi/discovery"
