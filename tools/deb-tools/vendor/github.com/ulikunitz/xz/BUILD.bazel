@@ -11,11 +11,11 @@ go_library(
         "reader.go",
         "writer.go",
     ],
-    importmap = "kope.io/etcd-manager/tools/deb-extract/vendor/github.com/ulikunitz/xz",
+    importmap = "kope.io/etcd-manager/tools/deb-tools/vendor/github.com/ulikunitz/xz",
     importpath = "github.com/ulikunitz/xz",
     visibility = ["//visibility:public"],
     deps = [
-        "//vendor/github.com/ulikunitz/xz/internal/xlog:go_default_library",
-        "//vendor/github.com/ulikunitz/xz/lzma:go_default_library",
+        "//tools/deb-tools/vendor/github.com/ulikunitz/xz/internal/xlog:go_default_library",
+        "//tools/deb-tools/vendor/github.com/ulikunitz/xz/lzma:go_default_library",
     ],
 )

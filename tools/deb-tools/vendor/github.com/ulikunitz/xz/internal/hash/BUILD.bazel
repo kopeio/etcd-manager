@@ -8,7 +8,7 @@ go_library(
         "rabin_karp.go",
         "roller.go",
     ],
-    importmap = "kope.io/etcd-manager/tools/deb-extract/vendor/github.com/ulikunitz/xz/internal/hash",
+    importmap = "kope.io/etcd-manager/tools/deb-tools/vendor/github.com/ulikunitz/xz/internal/hash",
     importpath = "github.com/ulikunitz/xz/internal/hash",
     visibility = ["//vendor/github.com/ulikunitz/xz:__subpackages__"],
 )
