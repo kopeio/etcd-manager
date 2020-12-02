@@ -31,11 +31,11 @@ go_library(
         "writer.go",
         "writer2.go",
     ],
-    importmap = "kope.io/etcd-manager/tools/deb-tools/vendor/github.com/ulikunitz/xz/lzma",
+    importmap = "kope.io/etcd-manager/tools/deb-extract/vendor/github.com/ulikunitz/xz/lzma",
     importpath = "github.com/ulikunitz/xz/lzma",
     visibility = ["//visibility:public"],
     deps = [
-        "//tools/deb-tools/vendor/github.com/ulikunitz/xz/internal/hash:go_default_library",
-        "//tools/deb-tools/vendor/github.com/ulikunitz/xz/internal/xlog:go_default_library",
+        "//vendor/github.com/ulikunitz/xz/internal/hash:go_default_library",
+        "//vendor/github.com/ulikunitz/xz/internal/xlog:go_default_library",
     ],
 )

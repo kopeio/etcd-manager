@@ -7,7 +7,7 @@ go_library(
         "reader.go",
         "writer.go",
     ],
-    importmap = "kope.io/etcd-manager/tools/deb-tools/vendor/github.com/blakesmith/ar",
+    importmap = "kope.io/etcd-manager/tools/deb-extract/vendor/github.com/blakesmith/ar",
     importpath = "github.com/blakesmith/ar",
     visibility = ["//visibility:public"],
 )
