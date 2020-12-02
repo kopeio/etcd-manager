@@ -25,7 +25,7 @@ import (
 	"sort"
 	"strings"
 
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 
 	"kope.io/etcd-manager/pkg/volumes"
 )

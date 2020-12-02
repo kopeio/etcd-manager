@@ -21,7 +21,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 
 	protoetcd "kope.io/etcd-manager/pkg/apis/etcd"
 	"kope.io/etcd-manager/pkg/commands"

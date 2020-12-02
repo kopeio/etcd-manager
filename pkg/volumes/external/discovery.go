@@ -22,7 +22,7 @@ import (
 	"net"
 	"strings"
 
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 
 	"kope.io/etcd-manager/pkg/privateapi/discovery"
 )

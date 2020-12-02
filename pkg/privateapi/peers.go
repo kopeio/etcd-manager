@@ -28,7 +28,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	"kope.io/etcd-manager/pkg/contextutil"
 	"kope.io/etcd-manager/pkg/privateapi/discovery"
 )

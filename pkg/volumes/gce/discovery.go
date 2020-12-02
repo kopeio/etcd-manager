@@ -17,7 +17,7 @@ limitations under the License.
 package gce
 
 import (
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	"kope.io/etcd-manager/pkg/privateapi/discovery"
 	"kope.io/etcd-manager/pkg/volumes"
 )

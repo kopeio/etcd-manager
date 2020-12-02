@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	"kope.io/etcd-manager/pkg/backup"
 	"kope.io/etcd-manager/pkg/etcd"
 	"kope.io/etcd-manager/pkg/etcd/dump"
