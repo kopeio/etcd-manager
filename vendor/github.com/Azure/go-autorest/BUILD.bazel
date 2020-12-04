@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["doc.go"],
+    importmap = "kope.io/etcd-manager/vendor/github.com/Azure/go-autorest",
+    importpath = "github.com/Azure/go-autorest",
+    visibility = ["//visibility:public"],
+)

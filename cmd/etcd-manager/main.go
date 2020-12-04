@@ -44,6 +44,7 @@ import (
 	"kope.io/etcd-manager/pkg/volumes"
 	"kope.io/etcd-manager/pkg/volumes/alicloud"
 	"kope.io/etcd-manager/pkg/volumes/aws"
+	"kope.io/etcd-manager/pkg/volumes/azure"
 	"kope.io/etcd-manager/pkg/volumes/do"
 	"kope.io/etcd-manager/pkg/volumes/external"
 	"kope.io/etcd-manager/pkg/volumes/gce"
@@ -254,6 +255,16 @@ func RunEtcdManager(o *EtcdManagerOptions) error {
 
 			volumeProvider = alicloudVolumeProvider
 			discoveryProvider = alicloudVolumeProvider
+
+		case "azure":
+			azureVolumeProvider, err := azure.NewAzureVolumes(o.ClusterName, o.VolumeTags, o.NameTag)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+				os.Exit(1)
+			}
+
+			volumeProvider = azureVolumeProvider
+			discoveryProvider = azureVolumeProvider
 
 		case "external":
 			volumeDir := volumes.PathFor("/mnt/disks")
