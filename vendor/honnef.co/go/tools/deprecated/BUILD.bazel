@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "deprecated",
     srcs = ["stdlib.go"],
     importmap = "kope.io/etcd-manager/vendor/honnef.co/go/tools/deprecated",
     importpath = "honnef.co/go/tools/deprecated",
