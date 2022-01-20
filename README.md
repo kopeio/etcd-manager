@@ -1,3 +1,12 @@
+# Archived: moved to etcdadm kubernetes project
+
+This repository is now part of the kubernetes project; development continues at [https://github.com/kubernetes-sigs/etcdadm](https://github.com/kubernetes-sigs/etcdadm).
+
+Please continue to contribute bugs / PRs / questions there!
+
+---
+
+
 # etcd-manager
 
 etcd-manager manages an etcd cluster, on a cloud or on bare-metal.
