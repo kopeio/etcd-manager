@@ -22,7 +22,7 @@ Communication with etcd-manager happens via the `etcd-manager-ctl` binary.
 A walkthrough of the process of setting up a cluster for local development can be found [here](docs/walkthrough.md).
 
 ## Backups
-The etcd-manager leader periodically backs up etcd snapshots to a backup store, in addition to automatically triggering an backup before cluster-modification operations.
+The etcd-manager leader periodically backs up etcd snapshots to a backup store, in addition to automatically triggering a backup before cluster-modification operations.
 
 Cluster changes that are not normally supported can be done safely through etcd backups & restore.
 
