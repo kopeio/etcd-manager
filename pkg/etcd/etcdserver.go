@@ -226,6 +226,34 @@ func (s *EtcdServer) GetInfo(ctx context.Context, request *protoetcd.GetInfoRequ
 	return response, nil
 }
 
+// SetInfo gets info about the node
+func (s *EtcdServer) SetInfo(ctx context.Context, request *protoetcd.SetInfoRequest) (*protoetcd.SetInfoResponse, error) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	response := &protoetcd.SetInfoResponse{}
+	response.Success = false
+	s.state.Cluster.Nodes = nil
+	for i, n := range request.EtcdState.Cluster.Nodes {
+		s.state.Cluster.Nodes[i] = &protoetcd.EtcdNode{
+			Name:                  n.Name,
+			ClientUrls:            n.ClientUrls,
+			PeerUrls:              n.PeerUrls,
+			QuarantinedClientUrls: n.QuarantinedClientUrls,
+			TlsEnabled:            n.TlsEnabled,
+		}
+	}
+	s.state.Cluster.ClusterToken = request.EtcdState.Cluster.ClusterToken
+	s.state.Cluster.DesiredClusterSize = request.EtcdState.Cluster.DesiredClusterSize
+	s.state.EtcdVersion = request.EtcdState.EtcdVersion
+	if err := writeState(s.baseDir, s.state); err != nil {
+		glog.Warningf("error updating state: %v", err)
+		return nil, err
+	}
+	response.Success = true
+	return response, nil
+}
+
 // UpdateEndpoints updates /etc/hosts with the other cluster members
 func (s *EtcdServer) UpdateEndpoints(ctx context.Context, request *protoetcd.UpdateEndpointsRequest) (*protoetcd.UpdateEndpointsResponse, error) {
 	s.mutex.Lock()
